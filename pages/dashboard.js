@@ -1,33 +1,46 @@
 import { Button } from "@nextui-org/react";
 import { Input } from "@nextui-org/react";
 import { Grid, Card, Text } from "@nextui-org/react";
-import Link from "next/link";
-import axios from "axios";
 import { useEffect } from "react";
 import { useState } from "react";
 import { useRouter } from "next/router";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchItem } from "./store/items";
+import { delItemList } from "./store/items";
+import { itemApi } from "./api/itemApi";
+import { useUpdateEffect } from "usehooks-ts";
+import { loadItems } from "./api/server";
 
-export const getStaticProps = async () => {
-  const res = await fetch("http://localhost:3001/items");
-  const itemsData = await res.json();
-  //console.log(itemsData);
+export const getServerSideProps = async () => {
+  const itemsData = await loadItems();
   return { props: { itemsData } };
 };
 
 const Dashboard = ({ itemsData }) => {
-  // useEffect(() => {
-  //   axios.get("http://localhost:3001/items").then((resp) => {
-  //     console.log(resp.data);
-  //   });
-  // });
-
-  // const mockData = [
-  //   { id: 0, title: "red", img: "imageOne" },
-  //   { id: 1, title: "blue", img: "imgTwo" },
-  // ];
   const router = useRouter();
-  const [dbData, setDbDate] = useState(itemsData);
+  const itemMap = useSelector((state) => state.itemReducer.value);
+  const [dbData, setDbDate] = useState([]);
   const [searchValue, setSearchValue] = useState("");
+  const dispatch = useDispatch();
+
+  //add data to state
+  useEffect(() => {
+    if (itemMap.length === 0) {
+      setDbDate(itemsData);
+      dispatch(fetchItem(itemsData));
+      console.log("db");
+    } else {
+      setDbDate(itemMap);
+      console.log("state");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useUpdateEffect(() => {
+    setDbDate(itemMap);
+  }, [itemMap]);
+
+  //map
   const mockItem = dbData.map((data) => (
     <Grid xs={3} className="card" key={data.id}>
       <Card css={{ aspectRatio: "1/1" }}>
@@ -59,7 +72,15 @@ const Dashboard = ({ itemsData }) => {
 
   //add new item
   const addNewItem = () => {
-    router.push({ pathname: "/create", query: { id: mockItem.length } });
+    router.push(
+      {
+        pathname: "/create",
+        query: { id: mockItem.length },
+        //option: { shallow: true },
+      },
+      undefined,
+      { shallow: true }
+    );
   };
 
   //edit item
@@ -69,48 +90,27 @@ const Dashboard = ({ itemsData }) => {
       query: item,
     });
   };
+
   //remove item
   const removeItem = (index) => {
-    axios.delete(`http://localhost:3001/items/${index}`).then(() => {
-      const delItems = dbData.filter((items) => items.id !== index);
-      setDbDate(delItems);
-    });
+    dispatch(delItemList(index));
   };
-  //search item
-  // useEffect(() => {
-  //   if (mockItem.length !== 0) {
-  //     if (searchValue !== "") {
-  //       const delaySearch = setTimeout(() => {
-  //         axios
-  //           .get(`http://localhost:3001/items?title_like=${searchValue}`)
-  //           .then((resp) => {
-  //             setDbDate(resp.data);
-  //           });
-  //       }, 500);
-  //       return () => clearTimeout(delaySearch);
-  //     } else {
-  //       setDbDate(itemsData);
-  //       console.log(searchValue);
-  //     }
-  //   }
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [searchValue, itemsData]);
 
-  const searchItem = () => {
-    if (searchValue !== "") {
-      const delaySearch = setTimeout(() => {
-        axios
-          .get(`http://localhost:3001/items?title_like=${searchValue}`)
-          .then((resp) => {
+  useEffect(() => {
+    if (itemMap.length !== 0) {
+      if (searchValue !== "") {
+        const delaySearch = setTimeout(() => {
+          itemApi.searchItems(searchValue).then((resp) => {
             setDbDate(resp.data);
           });
-      }, 500);
-      return () => clearTimeout(delaySearch);
-    } else {
-      setDbDate(itemsData);
-      console.log("else");
+        }, 500);
+        return () => clearTimeout(delaySearch);
+      } else {
+        setDbDate(itemMap);
+      }
     }
-  };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchValue, itemMap]);
 
   return (
     <div>
@@ -131,9 +131,7 @@ const Dashboard = ({ itemsData }) => {
         <Button aria-label="Add" onPress={addNewItem}>
           Add new item
         </Button>
-        <Button aria-label="Test" onPress={searchItem}>
-          Test
-        </Button>
+        <Button aria-label="Test">Test</Button>
       </div>
       <Grid.Container gap={2} justify="left">
         {mockItem}

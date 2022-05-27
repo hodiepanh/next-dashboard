@@ -1,23 +1,22 @@
 import { Input } from "@nextui-org/react";
 import { Button } from "@nextui-org/react";
 import React, { useState } from "react";
-import axios from "axios";
 import { useRouter } from "next/router";
+import { useDispatch } from "react-redux";
+import { addItemList } from "./store/items";
 
 const Create = () => {
   const router = useRouter();
   const [createName, setCreateName] = useState("");
+  const dispatch = useDispatch();
   const addNewItem = () => {
-    console.log(router.query);
     if (createName !== "") {
       const newItem = {
         id: Number(router.query.id),
         title: createName,
         img: "something",
       };
-      console.log(newItem);
-      axios.post("http://localhost:3001/items", newItem).then((resp) => {
-        console.log(resp.data);
+      dispatch(addItemList(newItem)).then(() => {
         router.push("/dashboard");
       });
     } else {
