@@ -10,8 +10,11 @@ import { delItemList } from "./store/items";
 import { itemApi } from "./api/itemApi";
 import { useUpdateEffect } from "usehooks-ts";
 import { loadItems } from "./api/server";
+import dashboard from "../styles/Dashboard.module.css";
+import LoadOverlay from "../component/loading";
+import { loadingState } from "./store/items";
 
-export const getServerSideProps = async () => {
+export const getStaticProps = async () => {
   const itemsData = await loadItems();
   return { props: { itemsData } };
 };
@@ -19,52 +22,58 @@ export const getServerSideProps = async () => {
 const Dashboard = ({ itemsData }) => {
   const router = useRouter();
   const itemMap = useSelector((state) => state.itemReducer.value);
-  const [dbData, setDbDate] = useState([]);
+  const stateLoading = useSelector(loadingState);
+  //const [stateLoading, setLoadingState] = useState(true);
+  const [dbData, setDbData] = useState([]);
   const [searchValue, setSearchValue] = useState("");
   const dispatch = useDispatch();
 
   //add data to state
   useEffect(() => {
     if (itemMap.length === 0) {
-      setDbDate(itemsData);
+      setDbData(itemsData);
       dispatch(fetchItem(itemsData));
       console.log("db");
     } else {
-      setDbDate(itemMap);
+      setDbData(itemMap);
       console.log("state");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useUpdateEffect(() => {
-    setDbDate(itemMap);
+    setDbData(itemMap);
   }, [itemMap]);
 
   //map
   const mockItem = dbData.map((data) => (
-    <Grid xs={3} className="card" key={data.id}>
-      <Card css={{ aspectRatio: "1/1" }}>
-        <Text h6 size={15} color="black" css={{ mt: 0 }}></Text>
-        <Button
-          aria-label="Edit"
-          auto
-          onPress={() => {
-            editItem(data);
-          }}
-        >
-          Edit
-        </Button>
-        <Button
-          aria-label="Remove"
-          auto
-          onPress={() => {
-            removeItem(data.id);
-          }}
-        >
-          Remove
-        </Button>
+    <Grid xs={3} className={dashboard.itemWrapper} key={data.id}>
+      <Card className={dashboard.paper}>
+        <div className={dashboard.itemButtonWrapper}>
+          <Text h6 size={15} color="black" css={{ mt: 0 }}></Text>
+          <Button
+            className={dashboard.editButton}
+            aria-label="Edit"
+            auto
+            onPress={() => {
+              editItem(data);
+            }}
+          >
+            Edit
+          </Button>
+          <Button
+            className={dashboard.removeButton}
+            aria-label="Remove"
+            auto
+            onPress={() => {
+              removeItem(data.id);
+            }}
+          >
+            Remove
+          </Button>
+        </div>
       </Card>
-      <div>
+      <div className={dashboard.itemTitle}>
         {data.id} {data.title}
       </div>
     </Grid>
@@ -101,12 +110,12 @@ const Dashboard = ({ itemsData }) => {
       if (searchValue !== "") {
         const delaySearch = setTimeout(() => {
           itemApi.searchItems(searchValue).then((resp) => {
-            setDbDate(resp.data);
+            setDbData(resp.data);
           });
         }, 500);
         return () => clearTimeout(delaySearch);
       } else {
-        setDbDate(itemMap);
+        setDbData(itemMap);
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -114,28 +123,41 @@ const Dashboard = ({ itemsData }) => {
 
   return (
     <div>
-      <h1> Dashboard </h1>
-      <Input
-        aria-label="Search"
-        id="search"
-        className="searchbar"
-        type="text"
-        value={searchValue}
-        placeholder="Type something to search"
-        onChange={(e) => {
-          setSearchValue(e.target.value);
-        }}
-      />
+      {stateLoading && (
+        <div>
+          <LoadOverlay />
+        </div>
+      )}
+      <div className={dashboard.root}>
+        {/* <h3> Dashboard </h3> */}
+        <div className={dashboard.searchbarWrapper}>
+          <Input
+            aria-label="Search"
+            id="search"
+            className={dashboard.searchbar}
+            type="text"
+            value={searchValue}
+            placeholder="Type something to search"
+            onChange={(e) => {
+              setSearchValue(e.target.value);
+            }}
+          />
+        </div>
 
-      <div>
-        <Button aria-label="Add" onPress={addNewItem}>
-          Add new item
-        </Button>
-        <Button aria-label="Test">Test</Button>
+        <div className={dashboard.addButtonWrapper}>
+          <Button auto aria-label="Add" onPress={addNewItem}>
+            Add new item
+          </Button>
+          {/* <Button auto aria-label="Test">
+          Test
+        </Button> */}
+        </div>
+        <div className={dashboard.gridWrapper}>
+          <Grid.Container gap={2} justify="left">
+            {mockItem}
+          </Grid.Container>
+        </div>
       </div>
-      <Grid.Container gap={2} justify="left">
-        {mockItem}
-      </Grid.Container>
     </div>
   );
 };

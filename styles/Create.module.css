@@ -1,0 +1,25 @@
+.createForm {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin: 5vw 30vw;
+}
+.form {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+.title {
+    padding: 20px 0;
+}
+.input {
+    width: 30vw;
+    height: 20px;
+    padding: 1px 10px;
+}
+
+.buttonWrapper {
+    display: flex;
+    justify-content: flex-start;
+    margin: 20px 0;
+}

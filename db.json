@@ -12,6 +12,11 @@
     },
     {
       "id": 2,
+      "title": "orange",
+      "img": "something"
+    },
+    {
+      "id": 3,
       "title": "yellow",
       "img": "something"
     }

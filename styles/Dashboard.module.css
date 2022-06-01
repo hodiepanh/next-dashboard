@@ -1,0 +1,74 @@
+.root {
+    flex-grow: 1;
+}
+.root .paper {
+    text-align: center;
+    aspect-ratio: 1/1;
+    align-items: center;
+    justify-content: center;
+    background-color: lightgrey;
+}
+.paper:hover {
+    text-align: center;
+    aspect-ratio: 1/1;
+    align-items: center;
+    justify-content: center;
+    background-color: black;
+}
+.itemButtonWrapper {
+    display: none;
+}
+.root .paper:hover .itemButtonWrapper {
+    display: flex;
+}
+.paper .itemButtonWrapper .editButton {
+        background-color: white;
+        color: black;
+        margin-right: 10px;
+}
+.paper .itemButtonWrapper .editButton:hover {
+        border: 1px solid white;
+        background-color: transparent;
+        color: white;
+}
+.paper .itemButtonWrapper .removeButton {
+        background-color: red;
+}
+.paper .itemButtonWrapper .removeButton:hover {
+        border: 1px solid red;
+        background-color: transparent;
+        color: red;
+}
+.addButtonWrapper {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.searchbarWrapper {
+    margin: 0 50px;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.searchbarWrapper .searchbar {
+    width: 25vw;
+    padding: 1px 10px;
+}
+
+.gridWrapper {
+    margin: 50px;
+}
+
+.itemWrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.itemWrapper .itemTitle {
+    display: flex;
+    justify-content: center;
+    margin: 10px;
+}

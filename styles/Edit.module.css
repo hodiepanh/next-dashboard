@@ -1,0 +1,32 @@
+.editForm {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin: 5vw 30vw;
+}
+.editFormWrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+.title {
+    padding: 20px 0;
+}
+.input {
+    width: 30vw;
+    height: 20px;
+    padding: 1px 10px;
+}
+
+.buttonWrapper {
+    display: flex;
+    justify-content: flex-start;
+    margin: 20px 0;
+}
+.buttonWrapper .editButton {
+    background-color: green;
+    margin-right: 20px;
+}
+.buttonWrapper .cancelButton {
+    background-color: gray;
+}

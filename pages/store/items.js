@@ -38,7 +38,7 @@ export const itemSlice = createSlice({
   reducers: {
     fetchItem: (state, action) => {
       state.value = action.payload;
-      console.log(current(state).value);
+      //console.log(current(state).value);
     },
     addItem: (state, action) => {
       const newItem = {

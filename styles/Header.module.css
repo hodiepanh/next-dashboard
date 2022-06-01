@@ -1,0 +1,10 @@
+.root {
+    flex-grow: 1;
+}
+.toolbar {
+    background-color: beige;
+}
+.toolbar .title {
+    margin-left: 50px;
+    color: black;
+}
