@@ -8,22 +8,20 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchItem } from "./store/items";
 import { delItemList } from "./store/items";
 import { itemApi } from "./api/itemApi";
-import { useUpdateEffect } from "usehooks-ts";
 import { loadItems } from "./api/server";
 import dashboard from "../styles/Dashboard.module.css";
 import LoadOverlay from "../component/loading";
 import { loadingState } from "./store/items";
 
-export const getStaticProps = async () => {
-  const itemsData = await loadItems();
-  return { props: { itemsData } };
-};
+// export const getStaticProps = async () => {
+//   const itemsData = await loadItems();
+//   return { props: { itemsData } };
+// };
 
-const Dashboard = ({ itemsData }) => {
+const Dashboard = () => {
   const router = useRouter();
   const itemMap = useSelector((state) => state.itemReducer.value);
   const stateLoading = useSelector(loadingState);
-  //const [stateLoading, setLoadingState] = useState(true);
   const [dbData, setDbData] = useState([]);
   const [searchValue, setSearchValue] = useState("");
   const dispatch = useDispatch();
@@ -31,19 +29,21 @@ const Dashboard = ({ itemsData }) => {
   //add data to state
   useEffect(() => {
     if (itemMap.length === 0) {
-      setDbData(itemsData);
-      dispatch(fetchItem(itemsData));
-      console.log("db");
+      const fetchServer = async () => {
+        const data = await loadItems();
+        setDbData(data);
+        dispatch(fetchItem(data));
+        console.log("db");
+      };
+      fetchServer();
+      //setDbData(itemsData);
+      //dispatch(fetchItem(itemsData));
     } else {
       setDbData(itemMap);
       console.log("state");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  useUpdateEffect(() => {
-    setDbData(itemMap);
-  }, [itemMap]);
 
   //map
   const mockItem = dbData.map((data) => (
@@ -105,6 +105,8 @@ const Dashboard = ({ itemsData }) => {
     dispatch(delItemList(index));
   };
 
+  const test = async () => {};
+
   useEffect(() => {
     if (itemMap.length !== 0) {
       if (searchValue !== "") {
@@ -148,9 +150,9 @@ const Dashboard = ({ itemsData }) => {
           <Button auto aria-label="Add" onPress={addNewItem}>
             Add new item
           </Button>
-          {/* <Button auto aria-label="Test">
-          Test
-        </Button> */}
+          {/* <Button auto aria-label="Test" onPress={test}>
+            Test
+          </Button> */}
         </div>
         <div className={dashboard.gridWrapper}>
           <Grid.Container gap={2} justify="left">
