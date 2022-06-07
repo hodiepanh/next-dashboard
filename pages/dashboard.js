@@ -13,12 +13,12 @@ import dashboard from "../styles/Dashboard.module.css";
 import LoadOverlay from "../component/loading";
 import { loadingState } from "./store/items";
 
-// export const getStaticProps = async () => {
-//   const itemsData = await loadItems();
-//   return { props: { itemsData } };
-// };
+export const getStaticProps = async () => {
+  const itemsData = await loadItems();
+  return { props: { itemsData } };
+};
 
-const Dashboard = () => {
+const Dashboard = ({ itemsData }) => {
   const router = useRouter();
   const itemMap = useSelector((state) => state.itemReducer.value);
   const stateLoading = useSelector(loadingState);
@@ -29,18 +29,10 @@ const Dashboard = () => {
   //add data to state
   useEffect(() => {
     if (itemMap.length === 0) {
-      const fetchServer = async () => {
-        const data = await loadItems();
-        setDbData(data);
-        dispatch(fetchItem(data));
-        console.log("db");
-      };
-      fetchServer();
-      //setDbData(itemsData);
-      //dispatch(fetchItem(itemsData));
+      setDbData(itemsData);
+      dispatch(fetchItem(itemsData));
     } else {
       setDbData(itemMap);
-      console.log("state");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
