@@ -17,7 +17,7 @@ export const getStaticProps = async () => {
   const itemsData = await loadItems();
   return { props: { itemsData } };
 };
-
+//comment
 const Dashboard = ({ itemsData }) => {
   const router = useRouter();
   const itemMap = useSelector((state) => state.itemReducer.value);
